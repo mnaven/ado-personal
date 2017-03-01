@@ -154,7 +154,12 @@ program define cgmwildboot, eclass byable(onecall) sortpreserve
 
 	matrix `xnull'=J(1,`numxc',.)
 	if "`null'" != "" {
-		if wordcount("`null'") == ``numx'' {
+		if "`null'" == "zero" {
+			forvalues k=1(1)``numx'' {
+				matrix `xnull'[1,`k']=0
+				}
+			}
+		else if wordcount("`null'") == ``numx'' {
 			forvalues k=1(1)``numx'' {
 				matrix `xnull'[1,`k']=real(word("`null'",`k'))
 				}
