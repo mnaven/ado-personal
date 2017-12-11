@@ -89,7 +89,7 @@ program define vam
 	else local nooutput=0
 	
 	* Start log
-	if (`nooutput'!=1) log using `"`output'_log"', replace name(`"`output'_log"')
+	if (`nooutput'!=1) log using `"`output'_log"', replace name(`output'_log)
 	
 	* Process by variables
 	if ("`by'"!="") {
@@ -423,7 +423,7 @@ program define vam
 	}
 	
 	* Close log
-	if (`nooutput'!=1) log close `"`output'_log"'
+	if (`nooutput'!=1) log close `output'_log
 
 end
 
