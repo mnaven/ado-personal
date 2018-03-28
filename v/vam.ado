@@ -22,8 +22,7 @@ program define vam
 		controls(varlist ts fv) absorb(varname) tfx_resid(varname) ///
 		data(string) output(string) output_addvars(varlist) ///
 		driftlimit(integer -1) ///
-		QUASIexperiment ///
-		ADDCONStant]
+		QUASIexperiment]
 
 	* Error checks
 	local depvar `varlist'
@@ -140,16 +139,10 @@ program define vam
 		* If tfx_resid is empty, predict residuals
 		if "`tfx_resid'"=="" {
 			qui predict score_r if e(sample),r 
-			if "`addconstant'"!="" {
-				replace score_r = score_r + _b[_cons]
-			}
 		}
 		* If tfx_resid was specified, predict residuals + absorbed teacher fixed effects
 		else {
 			qui predict score_r if e(sample), dresiduals
-			if "`addconstant'"!="" {
-				replace score_r = score_r + _b[_cons]
-			}
 		}
 		
 		*** Save residuals to a dataset if merging them later
