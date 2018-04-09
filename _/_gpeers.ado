@@ -35,7 +35,7 @@ program define _gpeers,  sortpreserve
 	gettoken h    0 : 0    /* The name of the new variable */
 	gettoken eqs  0 : 0	/* Not used */
 	
-	syntax varlist(min=1 max=1) [if] [in], by(varname) [label(string)]
+	syntax varlist(min=1 max=1) [if] [in], by(varname) [label(string) MISSok]
 	
 	/* Check whether varname is numeric */
 	confirm numeric variable `varlist'
@@ -45,7 +45,15 @@ program define _gpeers,  sortpreserve
 	tempvar t
 	quietly egen `t' = count(`varlist') if `touse', by(`by')
 	quietly egen `type' `h' = mean(`varlist')  if `touse', by(`by')
-	quietly replace `h' = (`t' * `h' - `varlist' ) / ( `t'-1 )  if `touse'
+	if ("`missok'"=="missok") {
+		/* h already contains the peer average if varname is missing because the overall mean is the peer average */
+		/* h will contain a missing value if varname is missing and there is only one individual in the unit */
+		/* Apply standard peers calculation if not missing varname */
+		quietly replace `h' = (`t' * `h' - `varlist' ) / ( `t'-1 ) if `touse' & !mi(`varlist')
+	}
+	else {
+		quietly replace `h' = (`t' * `h' - `varlist' ) / ( `t'-1 )  if `touse'
+	}
 	/* h will contain a missing value if there is only one individual in the unit */
 	if ("`label'" == "") {
 		label variable `h' "Average `varlist' among peers in unit defined by `by'"	
