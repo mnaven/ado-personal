@@ -23,7 +23,7 @@ program define vam
 		data(string) output(string) output_addvars(varlist) ///
 		driftlimit(integer -1) ///
 		QUASIexperiment ///
-		CONStant]
+		CONStant noseed]
 
 	* Error checks
 	local depvar `varlist'
@@ -206,7 +206,9 @@ program define vam
 
 	
 		*** Estimate covariance of two classes taught by same teacher in the same year
-		set seed 9827496
+		if "`seed'"=="" {
+			set seed 9827496
+		}
 		tempvar rand classnum
 		g `rand'=uniform()
 		bys `teacher' `year' (`rand'): gen `classnum'=_n
