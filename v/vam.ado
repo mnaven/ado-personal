@@ -23,7 +23,7 @@ program define vam
 		data(string) output(string) output_addvars(varlist) ///
 		driftlimit(integer -1) ///
 		QUASIexperiment ///
-		CONStant noseed]
+		CONStant noseed varclasszero]
 
 	* Error checks
 	local depvar `varlist'
@@ -235,11 +235,16 @@ program define vam
 		*** Compute the variance of the class-level shock.  Hits all kids in the class in the same way, but is unrelated across classes even taught by the same teacher in the same year.
 		scalar `var_class' = `var_total' - `var_ind' - `cov_sameyear'
 		if (`var_class'<0) {
-			di as error "Note: var_class has been computed as being less than 0."
-			di "var_class is defined as = var_total - var_ind - cov_sameyear."
-			di "Computed variances: var_total, var_ind, cov_sameyear, var_class"
-			di `var_total',`var_class',`var_ind',`cov_sameyear'
-			di "This negative variance can occur because cov_sameyear is calculated using only the subsample of observations that teach multiple classes per year (in the same by-group)."
+			if ("`varclasszero'"!="varclasszero") {
+				di as error "Note: var_class has been computed as being less than 0."
+				di "var_class is defined as = var_total - var_ind - cov_sameyear."
+				di "Computed variances: var_total, var_ind, cov_sameyear, var_class"
+				di `var_total',`var_ind',`cov_sameyear',`var_class'
+				di "This negative variance can occur because cov_sameyear is calculated using only the subsample of observations that teach multiple classes per year (in the same by-group)."
+			}
+			else if ("`varclasszero'"=="varclasszero") {
+				scalar `var_class' = 0
+			}
 		}
 		
 		tempvar weight
