@@ -17,7 +17,7 @@ program define vam
 
 	set more off
 
-	syntax varname(ts fv), teacher(varname) year(varname) class(varname) [ ///
+	syntax varname(ts fv) [aweight], teacher(varname) year(varname) class(varname) [ ///
 		by(varlist) ///
 		controls(varlist ts fv) absorb(varname) tfx_resid(varname) ///
 		data(string) output(string) output_addvars(varlist) ///
@@ -128,12 +128,23 @@ program define vam
 		
 		* If absorb or tfx_resid is not empty (only one is non-empty, otherwise an error was thrown), use areg 
 		if "`absorb'"!="" | "`tfx_resid'"!="" {
-			noisily areg `depvar' `controls' , absorb(`absorb'`tfx_resid')
+			if `weight'=="" {
+				noisily areg `depvar' `controls' , absorb(`absorb'`tfx_resid')
+			}
+			else if `weight'!="" {
+				noisily areg `depvar' `controls' [`weight' `exp'] , absorb(`absorb'`tfx_resid')
+			}
 		}
 		* If absorb and tfx_resid are both empty, run regular regression
 		else {
-			noisily reg `depvar' `controls'
+			if `weight'=="" {
+				noisily reg `depvar' `controls'
+			}
+			else if `weight'!="" {
+				noisily reg `depvar' `controls' [`weight' `exp']
+			}
 		}
+		macro drop _weight _exp
 		
 		*** Predict residuals
 		
