@@ -128,19 +128,19 @@ program define vam
 		
 		* If absorb or tfx_resid is not empty (only one is non-empty, otherwise an error was thrown), use areg 
 		if "`absorb'"!="" | "`tfx_resid'"!="" {
-			if `weight'=="" {
+			if "`weight'"=="" {
 				noisily areg `depvar' `controls' , absorb(`absorb'`tfx_resid')
 			}
-			else if `weight'!="" {
+			else if "`weight'"!="" {
 				noisily areg `depvar' `controls' [`weight' `exp'] , absorb(`absorb'`tfx_resid')
 			}
 		}
 		* If absorb and tfx_resid are both empty, run regular regression
 		else {
-			if `weight'=="" {
+			if "`weight'"=="" {
 				noisily reg `depvar' `controls'
 			}
-			else if `weight'!="" {
+			else if "`weight'"!="" {
 				noisily reg `depvar' `controls' [`weight' `exp']
 			}
 		}
