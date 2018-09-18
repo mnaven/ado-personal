@@ -17,7 +17,7 @@ program define vam
 
 	set more off
 
-	syntax varname(ts fv) [aweight], teacher(varname) year(varname) class(varname) [ ///
+	syntax varname(ts fv) [aweight/], teacher(varname) year(varname) class(varname) [ ///
 		by(varlist) ///
 		controls(varlist ts fv) absorb(varname) tfx_resid(varname) ///
 		data(string) output(string) output_addvars(varlist) ///
@@ -100,6 +100,15 @@ program define vam
 		local by_vals=`r(max)'
 	}
 	else local by_vals=1
+	
+	* Weights
+	if "`weight'"!="" {
+		local ind_weight "`weight'"
+		macro drop _weight
+		local ind_exp "`exp'"
+		macro drop _exp
+		local times_exp "* `exp'"
+	}
 
 	****************
 	
@@ -128,23 +137,34 @@ program define vam
 		
 		* If absorb or tfx_resid is not empty (only one is non-empty, otherwise an error was thrown), use areg 
 		if "`absorb'"!="" | "`tfx_resid'"!="" {
-			if "`weight'"=="" {
+			if "`ind_weight'"=="" {
 				noisily areg `depvar' `controls' , absorb(`absorb'`tfx_resid')
+				if `"`estimates'"'!="" {
+					estimates save `estimates'
+				}
 			}
-			else if "`weight'"!="" {
-				noisily areg `depvar' `controls' [`weight' `exp'] , absorb(`absorb'`tfx_resid')
+			else if "`ind_weight'"!="" {
+				noisily areg `depvar' `controls' [`ind_weight' = `ind_exp'] , absorb(`absorb'`tfx_resid')
+				if `"`estimates'"'!="" {
+					estimates save `estimates'
+				}
 			}
 		}
 		* If absorb and tfx_resid are both empty, run regular regression
 		else {
-			if "`weight'"=="" {
-				noisily reg `depvar' `controls'
+			if "`ind_weight'"=="" {
+				version 11 : noisily reg `depvar' `controls'
+				if `"`estimates'"'!="" {
+					estimates save `estimates'
+				}
 			}
-			else if "`weight'"!="" {
-				noisily reg `depvar' `controls' [`weight' `exp']
+			else if "`ind_weight'"!="" {
+				version 11 : noisily reg `depvar' `controls' [`ind_weight' = `ind_exp']
+				if `"`estimates'"'!="" {
+					estimates save `estimates'
+				}
 			}
 		}
-		macro drop _weight _exp
 		
 		*** Predict residuals
 		
@@ -161,6 +181,12 @@ program define vam
 			if "`constant'"!="" {
 				gen b_cons = _b[_cons] if e(sample)
 			}
+		}
+		
+		if "`ind_weight'"!="" {
+			tempvar tot_ind_weight class_ind_weight
+			qui egen `tot_ind_weight' = total(`ind_exp') if !mi(score_r)
+			qui egen `class_ind_weight' = total(`ind_exp') if !mi(score_r), by(`teacher' `year' `group' `class')
 		}
 		
 		*** Save residuals to a dataset if merging them later
@@ -190,7 +216,13 @@ program define vam
 
 		*** Compute total variance ***
 		tempvar class_mean index
-		qui by `teacher' `year' `group' `class': egen `class_mean' = mean(score_r) 
+		/*if "`ind_weight'"=="" {*/
+			qui by `teacher' `year' `group' `class': egen `class_mean' = mean(score_r) 
+		/*}*/
+		/*else if "`ind_weight'"!="" {
+			qui by `teacher' `year' `group' `class': egen `class_mean' = mean(score_r * `ind_exp')
+			qui replace `class_mean' = `class_mean' * (`n_tested' / `class_ind_weight')
+		}*/
 		qui by `teacher' `year' `group' `class': g `index' = _n
 
 		tempname var_total
@@ -259,7 +291,14 @@ program define vam
 		}
 		
 		tempvar weight
-		qui g `weight'=1/(`var_class' + `var_ind'/`n_tested')
+		/*if "`ind_weight'"=="" {*/
+			qui g `weight'=1/(`var_class' + `var_ind'/`n_tested')
+		/*}*/
+		/*else if "`ind_weight'"!="" {
+			qui g `weight'=`class_ind_weight'/(`var_class' + `var_ind'/`n_tested')
+			tempvar excess_class_weight
+			qui gen `excess_class_weight' = (`class_ind_weight' - 1)/(`var_class' + `var_ind'/`n_tested')
+		}*/
 		
 		*** Keep teacher-years which have no weight
 		
@@ -271,10 +310,20 @@ program define vam
 
 		
 		********** Collapse to teacher-year level data using precision weights **********
-		collapse (mean) `class_mean' (rawsum) `weight' `n_tested' `excess_weight' [aw=`weight'], by(`teacher' `year' `by') fast
+		/*if "`ind_weight'"=="" {*/
+			collapse (mean) `class_mean' (rawsum) `weight' `n_tested' `excess_weight' [aw=`weight'], by(`teacher' `year' `by') fast
+		/*}*/
+		/*else if "`ind_weight'"!="" {
+			collapse (mean) `class_mean' (rawsum) `weight' `n_tested' `excess_weight' `excess_class_weight' [aw=`weight'], by(`teacher' `year' `by') fast
+		}*/
 		
 		* Remove the excess weight used to keep missing scores
-		qui replace `weight'=`weight'-`excess_weight'
+		/*if "`ind_weight'"=="" {*/
+			qui replace `weight'=`weight'-`excess_weight'
+		/*}*/
+		/*else if "`ind_weight'"!="" {
+			qui replace `weight'=`weight'-`excess_weight'-`excess_class_weight'
+		}*/
 		
 		*** Estimate the covariance of years t and t+i for every i, and store in vector m
 		qui tsset `teacher' `year'/*, noquery*/
