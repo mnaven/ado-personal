@@ -23,7 +23,7 @@ program define vam
 		data(string) output(string) output_addvars(varlist) ///
 		driftlimit(integer -1) ///
 		QUASIexperiment ///
-		CONStant noseed varclasszero]
+		CONStant noseed varclasszero estimates(string asis)]
 
 	* Error checks
 	local depvar `varlist'
