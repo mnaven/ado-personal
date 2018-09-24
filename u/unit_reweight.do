@@ -6,16 +6,16 @@ program define unit_reweight
 	set prefix bootstrap
 	
 	_on_colon_parse `0'
-	local unit_vars = "`s(before)'"
+	local unit_varlist = "`s(before)'"
 	local command = "`s(after)'"
 	
 	tempvar unit
-	local num_unit_vars : word count `unit_vars'
+	local num_unit_vars : word count `unit_varlist'
 	if `num_unit_vars' > 1 {
-		egen `unit' = group(`unit_vars')
+		egen `unit' = group(`unit_varlist')
 	}
 	else if `num_unit_vars'==1 {
-		gen `unit' = `unit_vars'
+		gen `unit' = `unit_varlist'
 	}
 	
 	_prefix_command unit_reweight, norest checkcluster checkvce : `command'
