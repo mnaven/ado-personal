@@ -18,7 +18,7 @@ program define binscatter, eclass sortpreserve
 		Nquantiles(integer 20) GENxq(name) discrete xq(varname numeric) MEDians ///
 		CONTROLs(varlist numeric ts fv) absorb(varname) noAddmean ///
 		LINEtype(string) rd(numlist ascending) reportreg ///
-		COLors(string) MColors(string) LColors(string) Msymbols(string) ///
+		COLors(string) MColors(string) LColors(string) Msymbols(string) MSIzes(string) ///
 		savegraph(string) savedata(string) replace ///
 		nofastxtile randvar(varname numeric) randcut(real 1) randn(integer -1) ///
 		/* LEGACY OPTIONS */ nbins(integer 20) create_xq x_q(varname numeric) symbols(string) method(string) unique(string) ///
@@ -505,6 +505,10 @@ program define binscatter, eclass sortpreserve
 		local symbol_prefix "msymbol("
 		local symbol_suffix ")"
 	}
+	if "`msizes'"!="" {
+		local size_prefix "msize("
+		local size_suffix ")"
+	}
 	
 	*** Prepare scatters
 	
@@ -555,7 +559,7 @@ program define binscatter, eclass sortpreserve
 			}
 			
 			* Add options
-			local scatter_options `connect' mcolor(`: word `c' of `mcolors'') lcolor(`: word `c' of `lcolors'') `symbol_prefix'`: word `c' of `msymbols''`symbol_suffix'
+			local scatter_options `connect' mcolor(`: word `c' of `mcolors'') lcolor(`: word `c' of `lcolors'') `symbol_prefix'`: word `c' of `msymbols''`symbol_suffix' `size_prefix'`: word `c' of `msizes''`size_suffix'
 			local scatters `scatters', `scatter_options')
 			if ("`savedata'"!="") local savedata_scatters `savedata_scatters', `scatter_options')
 		
