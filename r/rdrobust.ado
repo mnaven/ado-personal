@@ -2,7 +2,7 @@
 
 capture program drop rdrobust 
 program define rdrobust, eclass
-	syntax anything [if] [in] [, c(real 0) fuzzy(string) deriv(real 0) p(string) q(real 0) h(string) b(string) rho(real 0) covs(string) covs_drop(string) kernel(string) weights(string) bwselect(string) vce(string) level(real 95) all scalepar(real 1) scaleregul(real 1) nochecks masspoints(string) bwcheck(real 0) bwrestrict(string) stdvars(string)]
+	syntax anything [if] [in] [, c(real 0) fuzzy(string) deriv(real 0) p(string) q(real 0) h(string) b(string) rho(string) covs(string) covs_drop(string) kernel(string) weights(string) bwselect(string) vce(string) level(real 95) all scalepar(real 1) scaleregul(real 1) nochecks masspoints(string) bwcheck(real 0) bwrestrict(string) stdvars(string)]
 	*disp in yellow "Preparing data." 
 	marksample touse
 	preserve
@@ -80,6 +80,22 @@ program define rdrobust, eclass
 		exit 125
 	}
 	
+	if ("`rho'"=="")  local rho = 0
+	tokenize `rho'	
+	local w : word count `rho'
+	if `w' == 1 {
+		local rho_l `"`1'"'
+		local rho_r `"`1'"'
+	}
+	if `w' == 2 {
+		local rho_l `"`1'"'
+		local rho_r `"`2'"'
+	}
+	if `w' >= 3 {
+		di as error  "{err}{cmd:rho()} only accepts two inputs"  
+		exit 125
+	}
+	
 	*** Manual bandwidth 
 	if ("`h'"!="") {	
 		local bwselect = "Manual"
@@ -90,9 +106,9 @@ program define rdrobust, eclass
 		}		
 		
 		scalar rho= round(`rho', .0001)
-		if (rho>0)  {
-			local b_l = `h_l'/`rho'
-			local b_r = `h_r'/`rho'
+		if ("`rho'"!="")  {
+			local b_l = `h_l'/`rho_l'
+			local b_r = `h_r'/`rho_r'
 		}		
 	}	
 	
@@ -525,10 +541,11 @@ masspoints_found = 0
 			b_r = b_r*cer_b
 		}
 		
-		rho = `rho'
-		if (rho>0)  {
-			b_l = h_l/rho
-			b_r = h_r/rho
+		rho_l = `rho_l'
+		rho_r = `rho_r'
+		if ("`rho'"!="")  {
+			b_l = h_l/rho_l
+			b_r = h_r/rho_r
 		}
 					
 		*** De-Starndardized *********************************
