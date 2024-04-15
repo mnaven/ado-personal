@@ -4,8 +4,15 @@ program define putexcel_remote
 	
 	*** If the error was because putexcel was unable to save the file, then wait 1000ms and try again
 	if _rc==603 {
-		sleep 1000
-		putexcel `0'
+		local i = 1
+		while _rc==603 & `++i'<=10 {
+			di "Attempt #" `i'
+			sleep 1000
+			capture putexcel `0'
+		}
+		if _rc==603 {
+			di "Maximum number of attempts reached."
+		}
 	}
 	
 	*** If there was a different error, then run the putexcel file again immediately and display the error message
