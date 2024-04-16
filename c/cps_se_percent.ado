@@ -1,7 +1,7 @@
 version 18
 cap program drop cps_se_percent
 program define cps_se_percent, rclass
-	args percentage percent_or_proportion denominator critical_value alpha beta
+	args percentage percent_or_proportion denominator alpha beta critical_value
 	tempname p y cv se_mata se_stata ll_mata ll_stata ul_mata ul_stata
 
 	mata: `p' = st_matrix("`percentage'") // Create mata matrix with percentage estimate

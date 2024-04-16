@@ -1,7 +1,7 @@
 version 18
 cap program drop cps_se_level
 program define cps_se_level, rclass
-	args level population_tot_civ_noninst critical_value alpha beta
+	args level population_tot_civ_noninst alpha beta critical_value
 	tempname x N cv se_mata se_stata ll_mata ll_stata ul_mata ul_stata
 
 	mata: `x' = st_matrix("`level'") // Create mata matrix with level estimate
