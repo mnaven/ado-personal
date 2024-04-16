@@ -2,12 +2,8 @@ version 18
 cap program drop cps_se_percent
 program define cps_se_percent, rclass
 	args percentage percent_or_proportion denominator alpha beta critical_value
-	tempname p y cv
 
-	mata: `p' = st_matrix("`percentage'") // Create mata matrix with percentage estimate
-	mata: `y' = st_matrix("`denominator'") // Create mata matrix with the number of persons in the percentage's base or denominator
-	mata: `cv' = st_matrix("`critical_value'") // Create mata matrix with the critical value
-	mata: cps_se_percent(`p', "`percent_or_proportion'", `y', `alpha', `beta', `cv') // Apply CPS formula for standard errors of estimated rates, ratios, and percentages
+	mata: cps_se_percent(st_matrix("`percentage'"), "`percent_or_proportion'", st_matrix("`denominator'"), `alpha', `beta', st_matrix("`critical_value'")) // Apply CPS formula for standard errors of estimated rates, ratios, and percentages
 	
 	return add
 end

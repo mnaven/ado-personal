@@ -2,12 +2,8 @@ version 18
 cap program drop cps_se_level
 program define cps_se_level, rclass
 	args level population_tot_civ_noninst alpha beta critical_value
-	tempname x N cv
 
-	mata: `x' = st_matrix("`level'") // Create mata matrix with level estimate
-	mata: `N' = st_matrix("`population_tot_civ_noninst'") // Create mata matrix with the total civilian noninstitutional population 16 years and over
-	mata: `cv' = st_matrix("`critical_value'") // Create mata matrix with the critical value
-	mata: cps_se_level(`x', `N', `alpha', `beta', `cv') // Apply CPS formula for standard errors of estimated levels
+	mata: cps_se_level(st_matrix("`level'"), st_matrix("`population_tot_civ_noninst'"), `alpha', `beta', st_matrix("`critical_value'")) // Apply CPS formula for standard errors of estimated levels
 	
 	return add
 end
