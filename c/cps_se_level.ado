@@ -20,7 +20,6 @@ program define cps_se_level, rclass
 end
 
 mata:
-	mata clear
 	real vector cps_se_level(real vector x, real vector N, real scalar alpha, real scalar beta)
 	{
 		real vector se

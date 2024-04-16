@@ -20,7 +20,6 @@ program define cps_se_percent, rclass
 end
 
 mata:
-	mata clear
 	real vector cps_se_percent(real vector p, string scalar percent_or_proportion, real vector y, real scalar alpha, real scalar beta)
 	{
 		if (percent_or_proportion=="proportion") { // If the percentage is a proportion instead of a percent
