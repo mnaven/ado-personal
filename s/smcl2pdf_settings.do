@@ -4,10 +4,9 @@ program define smcl2pdf_settings
 	
 	syntax [, orientation(string) pagewidth(real 8.5) pageheight(real 14.0) lmargin(real 0.4) rmargin(real 0.4) tmargin(real 0.4) bmargin(real 0.4) linesize(real 120) fontsize(real 8) scheme(string)]
 	
-	if "`orientation'"=="" local orientation "portrait" // Default orientation option
 	if "`scheme'"=="" local scheme "color" // Default scheme option
 	
-	capture assert inlist("`orientation'", "portrait", "landscape")
+	if "`orientation'"!="" capture assert inlist("`orientation'", "portrait", "landscape")
 	if _rc!=0 { // If orientation is not portrait or landscape
 		local rc = _rc
 		di as error `"The option "orientation" must be either portrait or landscape"'
