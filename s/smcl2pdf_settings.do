@@ -7,7 +7,13 @@ program define smcl2pdf_settings
 	if "`orientation'"=="" local orientation "portrait" // Default orientation option
 	if "`scheme'"=="" local scheme "color" // Default scheme option
 	
-	assert inlist("`orientation'", "portrait", "landscape")
+	capture assert inlist("`orientation'", "portrait", "landscape")
+	if _rc!=0 { // If orientation is not portrait or landscape
+		local rc = _rc
+		di as error `"The option "orientation" must be either portrait or landscape"'
+		error `rc'
+		exit
+	}
 	if "`orientation'"=="portrait" { // If portrait orientation
 		if "`pagewidth'"=="" local pagewidth 8.5 // Default portrait page width (legal paper size)
 		if "`pageheight'"=="" local pageheight 14.0 // Default portrait page height (legal paper size)
