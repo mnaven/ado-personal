@@ -1,6 +1,6 @@
 cap program drop smcl2pdf_settings
 program define smcl2pdf_settings
-	version 18.0
+	version 17.0
 	
 	syntax [, orientation(string) pagewidth(real 8.5) pageheight(real 14.0) lmargin(real 0.4) rmargin(real 0.4) tmargin(real 0.4) bmargin(real 0.4) linesize(real 120) fontsize(real 8) scheme(string)]
 	
