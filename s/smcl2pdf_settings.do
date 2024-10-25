@@ -14,22 +14,14 @@ program define smcl2pdf_settings
 		exit
 	}
 	if "`orientation'"=="portrait" { // If portrait orientation
-		if "`pagewidth'"=="" local pagewidth 8.5 // Default portrait page width (legal paper size)
-		if "`pageheight'"=="" local pageheight 14.0 // Default portrait page height (legal paper size)
-		if "`lmargin'"=="" local lmargin 0.4 // Default portrait left margin
-		if "`rmargin'"=="" local rmargin 0.4 // Default portrait right margin
-		if "`tmargin'"=="" local tmargin 0.4 // Default portrait top margin
-		if "`bmargin'"=="" local bmargin 0.4 // Default portrait bottom margin
-		if "`linesize'"=="" local linesize 120 // Default portrait line size
+		local pagewidth 8.5 // Default portrait page width (legal paper size)
+		local pageheight 14.0 // Default portrait page height (legal paper size)
+		local linesize 120 // Default portrait line size
 	}
 	else if "`orientation'"=="landscape" { // If landscape orientation
-		if "`pagewidth'"=="" local pagewidth 14.0 // Default landscape page width (legal paper size)
-		if "`pageheight'"=="" local pageheight 8.5 // Default landscape page height (legal paper size)
-		if "`lmargin'"=="" local lmargin 0.4 // Default landscape left margin
-		if "`rmargin'"=="" local rmargin 0.4 // Default landscape right margin
-		if "`tmargin'"=="" local tmargin 0.4 // Default landscape top margin
-		if "`bmargin'"=="" local bmargin 0.4 // Default landscape bottom margin
-		if "`linesize'"=="" local linesize 200 // Default landscape line size
+		local pagewidth 14.0 // Default landscape page width (legal paper size)
+		local pageheight 8.5 // Default landscape page height (legal paper size)
+		local linesize 200 // Default landscape line size
 	}
 	
 	translator set smcl2pdf pagesize custom
