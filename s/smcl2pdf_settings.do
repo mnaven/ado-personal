@@ -7,23 +7,23 @@ program define smcl2pdf_settings
 	if "`scheme'"=="" local scheme "color" // Default scheme option
 	
 	if "`orientation'"!="" { // If user specified orientation option
-	capture assert inlist("`orientation'", "portrait", "landscape")
-	if _rc!=0 { // If orientation is not portrait or landscape
-		local rc = _rc
-		di as error `"The option "orientation" must be either portrait or landscape"'
-		error `rc'
-		exit
-	}
-	else if "`orientation'"=="portrait" { // If portrait orientation
-		local pagewidth 8.5 // Default portrait page width (legal paper size)
-		local pageheight 14.0 // Default portrait page height (legal paper size)
-		local linesize 120 // Default portrait line size
-	}
-	else if "`orientation'"=="landscape" { // If landscape orientation
-		local pagewidth 14.0 // Default landscape page width (legal paper size)
-		local pageheight 8.5 // Default landscape page height (legal paper size)
-		local linesize 200 // Default landscape line size
-	}
+		capture assert inlist("`orientation'", "portrait", "landscape")
+		if _rc!=0 { // If orientation is not portrait or landscape
+			local rc = _rc
+			di as error `"The option "orientation" must be either portrait or landscape"'
+			error `rc'
+			exit
+		}
+		else if "`orientation'"=="portrait" { // If portrait orientation
+			local pagewidth 8.5 // Default portrait page width (legal paper size)
+			local pageheight 14.0 // Default portrait page height (legal paper size)
+			local linesize 120 // Default portrait line size
+		}
+		else if "`orientation'"=="landscape" { // If landscape orientation
+			local pagewidth 14.0 // Default landscape page width (legal paper size)
+			local pageheight 8.5 // Default landscape page height (legal paper size)
+			local linesize 200 // Default landscape line size
+		}
 	}
 	
 	translator set smcl2pdf pagesize custom
