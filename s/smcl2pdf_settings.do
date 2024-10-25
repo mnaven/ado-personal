@@ -2,7 +2,7 @@ cap program drop smcl2pdf_settings
 program define smcl2pdf_settings
 	version 18.0
 	
-	syntax , [orientation(string) pagewidth(real) pageheight(real) lmargin(real 0.4) rmargin(real 0.4) tmargin(real 0.4) bmargin(real 0.4) fontsize(real 8) scheme(string)]
+	syntax , [orientation(string) pagewidth(real) pageheight(real) lmargin(real 0.4) rmargin(real 0.4) tmargin(real 0.4) bmargin(real 0.4) linesize(real) fontsize(real 8) scheme(string)]
 	
 	if "`orientation'"=="" local orientation "portrait" // Default orientation option
 	if "`scheme'"=="" local scheme "color" // Default scheme option
@@ -15,6 +15,7 @@ program define smcl2pdf_settings
 		if "`rmargin'"=="" local rmargin 0.4 // Default portrait right margin
 		if "`tmargin'"=="" local tmargin 0.4 // Default portrait top margin
 		if "`bmargin'"=="" local bmargin 0.4 // Default portrait bottom margin
+		if "`linesize'"=="" local linesize 120 // Default portrait line size
 	}
 	else if "`orientation'"=="landscape" { // If landscape orientation
 		if "`pagewidth'"=="" local pagewidth 14.0 // Default landscape page width (legal paper size)
@@ -23,6 +24,7 @@ program define smcl2pdf_settings
 		if "`rmargin'"=="" local rmargin 0.4 // Default landscape right margin
 		if "`tmargin'"=="" local tmargin 0.4 // Default landscape top margin
 		if "`bmargin'"=="" local bmargin 0.4 // Default landscape bottom margin
+		if "`linesize'"=="" local linesize 200 // Default landscape line size
 	}
 	
 	translator set smcl2pdf pagesize custom
@@ -34,4 +36,5 @@ program define smcl2pdf_settings
 	translator set smcl2pdf bmargin `bmargin'
 	translator set smcl2pdf fontsize `fontsize'
 	translator set smcl2pdf scheme `scheme'
+	set linesize `linesize'
 end
