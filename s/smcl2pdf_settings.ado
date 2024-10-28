@@ -2,7 +2,7 @@ cap program drop smcl2pdf_settings
 program define smcl2pdf_settings
 	version 17.0
 	
-	syntax [, orientation(string) pagewidth(real 8.5) pageheight(real 14.0) lmargin(real 0.4) rmargin(real 0.4) tmargin(real 0.4) bmargin(real 0.4) linesize(real 120) fontsize(real 8) scheme(string)]
+	syntax [, fontsize(real 8) orientation(string) pagewidth(real 8.5) pageheight(real 14.0) lmargin(real 0.4) rmargin(real 0.4) tmargin(real 0.4) bmargin(real 0.4) linesize(real 120) scheme(string)]
 	
 	if "`scheme'"=="" local scheme "color" // Default scheme option
 	
@@ -26,6 +26,7 @@ program define smcl2pdf_settings
 		}
 	}
 	
+	translator set smcl2pdf fontsize `fontsize'
 	translator set smcl2pdf pagesize custom
 	translator set smcl2pdf pagewidth `pagewidth'
 	translator set smcl2pdf pageheight `pageheight'
@@ -33,7 +34,6 @@ program define smcl2pdf_settings
 	translator set smcl2pdf rmargin `rmargin'
 	translator set smcl2pdf tmargin `tmargin'
 	translator set smcl2pdf bmargin `bmargin'
-	translator set smcl2pdf fontsize `fontsize'
 	translator set smcl2pdf scheme `scheme'
 	set linesize `linesize'
 end
