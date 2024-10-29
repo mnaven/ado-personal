@@ -2,7 +2,7 @@ cap program drop smcl2pdf_settings
 program define smcl2pdf_settings
 	version 17.0
 	
-	syntax [, header logo nocmdnumber fontsize(real 8) pagesize(string) orientation(string) pagewidth(real -1) pageheight(real -1) lmargin(real 0.4) rmargin(real 0.4) tmargin(real 0.4) bmargin(real 0.4) linesize(real -1) scheme(string)]
+	syntax [, header logo nocmdnumber fontsize(real 8) pagesize(string) orientation(string) pagewidth(real -1) pageheight(real -1) lmargin(real 0.4) rmargin(real 0.4) tmargin(real 0.4) bmargin(real 0.4) linesize(real -1) scheme(string) query]
 	
 	
 	**** Error Checks ****
@@ -139,4 +139,13 @@ program define smcl2pdf_settings
 		else if "`orientation'"=="landscape" local linesize 200
 	}
 	else set linesize `linesize'
+	
+	
+	
+	
+	**** Translator Query
+	if "`query'"=="query" { // If query option is specified
+		translator query smcl2pdf
+		di "The log file is in {bf:`orientation'} orientation with a line size of {bf:`linesize'}."
+	}
 end
