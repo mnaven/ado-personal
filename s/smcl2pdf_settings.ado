@@ -79,15 +79,17 @@ program define smcl2pdf_settings
 	
 	
 	**** Set Orientation via Page Width and Page Height
-	if "`orientation'"!="" & `pagewidth'==-1 & `pageheight'==-1 { // If orientation option is specified and pagewidth and pageheight options are not specified
+	if `pagewidth'==-1 & `pageheight'==-1 { // If pagewidth and pageheight options are not specified
 		translator query smcl2pdf
 		if r(pagewidth)<r(pageheight) { // If current settings are portrait orientation
 			local short_side = r(pagewidth)
 			local long_side = r(pageheight)
+			local orientation_query "portrait"
 		}
 		else if r(pageheight)<r(pagewidth) { // If current settings are landscape orientation
 			local short_side = r(pageheight)
 			local long_side = r(pagewidth)
+			local orientation_query "landscape"
 		}
 		
 		if "`orientation'"=="portrait" { // If portrait option is specified
@@ -100,6 +102,7 @@ program define smcl2pdf_settings
 			translator set smcl2pdf pagewidth `long_side'
 			translator set smcl2pdf pageheight `short_side'
 		}
+		else if "`orientation'"=="" local orientation "`orientation_query'"
 	}
 	
 	
