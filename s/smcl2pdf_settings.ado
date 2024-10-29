@@ -5,6 +5,25 @@ program define smcl2pdf_settings
 	syntax [, header logo nocmdnumber fontsize(real 8) pagesize(string) orientation(string) pagewidth(real -1) pageheight(real -1) lmargin(real 0.4) rmargin(real 0.4) tmargin(real 0.4) bmargin(real 0.4) linesize(real -1) scheme(string)]
 	
 	
+	**** Error Checks ****
+	* Error Checks for Page Size and Page Width/Height
+	if "`pagesize'"!="" { // If pagesize option is specified
+		capture assert inlist(strupper("`pagesize'"), "LETTER", "LEGAL", "A3", "A4", "A5", "B4", "B5")
+		if _rc!=0 { // If pagesize is not letter, legal, A3, A4, A5, B4, or B5
+			local rc = _rc
+			di as error `"The option "pagesize" must be either letter, legal, A3, A4, A5, B4, or B5"'
+			error `rc'
+			exit
+		}
+		else if pagewidth!=-1 | pageheight!=-1 { // If pagewidth or pageheight options are specified
+			di as error `"The option "pagesize" cannot be combined with the options "pagewidth" and "pageheight""'
+			error 184
+			exit
+		}
+		else translator set smcl2pdf `pagesize'
+	}
+	
+	
 	**** Set Defaults ****
 	* Default Page Size: legal
 	if "`pagesize'"=="" & `pagewidth'==-1 & `pageheight'==-1 { // If pagesize, pagewidth, and pageheight options are not specified
@@ -55,8 +74,7 @@ program define smcl2pdf_settings
 	translator set smcl2pdf fontsize `fontsize'
 	
 	* Page Size
-	if "`pagesize'"!="" translator set smcl2pdf pagesize `pagesize'
-	else { // If pagesize not specified
+	if "`pagesize'"=="" { // If pagesize not specified
 		translator set smcl2pdf pagesize custom
 		translator set smcl2pdf pagewidth `pagewidth'
 		translator set smcl2pdf pageheight `pageheight'
