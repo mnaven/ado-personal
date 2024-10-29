@@ -11,16 +11,16 @@ program define smcl2pdf_settings
 		capture assert inlist(strupper("`pagesize'"), "LETTER", "LEGAL", "A3", "A4", "A5", "B4", "B5")
 		if _rc!=0 { // If pagesize is not letter, legal, A3, A4, A5, B4, or B5
 			local rc = _rc
-			di as error `"The option "pagesize" must be either letter, legal, A3, A4, A5, B4, or B5"'
+			di as error `"The option "pagesize" must be either letter, legal, A3, A4, A5, B4, or B5."'
 			error `rc'
 			exit
 		}
-		else if pagewidth!=-1 | pageheight!=-1 { // If pagewidth or pageheight options are specified
-			di as error `"The option "pagesize" cannot be combined with the options "pagewidth" and "pageheight""'
+		else if `pagewidth'!=-1 | `pageheight'!=-1 { // If pagewidth or pageheight options are specified
+			di as error `"The option "pagesize" cannot be combined with the options "pagewidth" and "pageheight"."'
 			error 184
 			exit
 		}
-		else translator set smcl2pdf `pagesize'
+		else translator set smcl2pdf pagesize `pagesize'
 	}
 	
 	
@@ -29,7 +29,7 @@ program define smcl2pdf_settings
 		capture assert inlist("`orientation'", "portrait", "landscape")
 		if _rc!=0 { // If orientation is not portrait or landscape
 			local rc = _rc
-			di as error `"The option "orientation" must be either portrait or landscape"'
+			di as error `"The option "orientation" must be either portrait or landscape."'
 			error `rc'
 			exit
 		}
@@ -41,14 +41,14 @@ program define smcl2pdf_settings
 		if "`orientation'"=="portrait" capture assert `pagewidth'<`pageheight'
 			if _rc!=0 { // If pagewidth is not less than pageheight
 				local rc = _rc
-				di as error `"Page width must be less than page height for portrait orientation"'
+				di as error `"Page width must be less than page height for portrait orientation."'
 				error `rc'
 				exit
 			}
 		else if "`orientation'"=="landscape" capture assert `pageheight'<`pagewidth'
 			if _rc!=0 { // If pageheight is not less than pagewidth
 				local rc = _rc
-				di as error `"Page height must be less than page width for landscape orientation"'
+				di as error `"Page height must be less than page width for landscape orientation."'
 				error `rc'
 				exit
 			}
@@ -80,7 +80,7 @@ program define smcl2pdf_settings
 	
 	**** Set Orientation via Page Width and Page Height
 	if `pagewidth'==-1 & `pageheight'==-1 { // If pagewidth and pageheight options are not specified
-		translator query smcl2pdf
+		quiet: translator query smcl2pdf
 		if r(pagewidth)<r(pageheight) { // If current settings are portrait orientation
 			local short_side = r(pagewidth)
 			local long_side = r(pageheight)
