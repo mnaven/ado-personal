@@ -103,6 +103,8 @@ program define smcl2pdf_settings
 	}
 	
 	
+	
+	
 	**** Set smcl2pdf Settings
 	* Header
 	if "`header'"=="header" translator set smcl2pdf header on
@@ -129,5 +131,9 @@ program define smcl2pdf_settings
 	translator set smcl2pdf scheme `scheme'
 	
 	* Line Size
-	set linesize `linesize'
+	if `linesize'==-1 { // If linesize option not specified
+		if "`orientation'"=="portrait" local linesize 120
+		else if "`orientation'"=="landscape" local linesize 200
+	}
+	else set linesize `linesize'
 end
