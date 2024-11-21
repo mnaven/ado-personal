@@ -2,11 +2,31 @@ cap program drop smcl2pdf_settings
 program define smcl2pdf_settings
 	version 17.0
 	
-	syntax [, DEFAULTpage HEADer LOGO noCMDnumber FONTSize(integer -1) PAGESize(string) ORIENTation(string) PAGEWidth(real -1) PAGEHeight(real -1) Margins(real -1) LMargin(real -1) RMargin(real -1) TMargin(real -1) BMargin(real -1) LINESize(integer -1) SCHEME(string) Query]
+	syntax [, DEFAULTpage DEFAULTPortrait DEFAULTLandscape HEADer LOGO noCMDnumber FONTSize(integer -1) PAGESize(string) ORIENTation(string) PAGEWidth(real -1) PAGEHeight(real -1) Margins(real -1) LMargin(real -1) RMargin(real -1) TMargin(real -1) BMargin(real -1) LINESize(integer -1) SCHEME(string) Query]
 	
 	
 	**** Error Checks ****
-	* Error Checks for Default Page Style
+	* Error Checks for Default Page Styles
+	if "`defaultportrait'"=="defaultportrait" | "`defaultlandscape'"=="defaultlandscape" { // If defaultportrait or defaultlandscape options are specified
+		capture assert "`defaultportrait'"!="defaultportrait" | "`defaultlandscape'"!="defaultlandscape"
+		if _rc!=0 { // If defaultportrait and defaultlandscape options are both specified
+			local rc = _rc
+			di as error `"The options "defaultportrait" and "defaultlandscape" cannot be combined."'
+			error `rc'
+			exit
+		}
+		else {
+			local defaultpage "defaultpage"
+			
+			if "`defaultportrait'"=="defaultportrait" { // If defaultportrait option is specified
+				local orientation "portrait"
+			}
+			else if "`defaultlandscape'"=="defaultlandscape" { // If defaultlandscape option is specified
+				local orientation "landscape"
+			}
+		}
+	}
+	
 	if "`defaultpage'"=="defaultpage" { // If defaultpage option is specified
 		capture assert "`header'"=="" & "`logo'"=="" & "`cmdnumber'"=="" & inlist(`fontsize', -1, 8) & inlist("`pagesize'", "", "legal") & `pagewidth'==-1 & `pageheight'==-1 & inlist(`margins', -1, 0.4) & inlist(`lmargin', -1, 0.4) & inlist(`rmargin', -1, 0.4) & inlist(`tmargin', -1, 0.4) & inlist(`bmargin', -1, 0.4) & inlist("`scheme'", "", "color")
 		if _rc!=0 { // If header, logo, nocmdnumber, fontsize, pagesize, pagewidth, pageheight, margins, lmargin, rmargin, tmargin, bmargin, or scheme are specified
