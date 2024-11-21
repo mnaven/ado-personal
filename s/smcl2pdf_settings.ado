@@ -2,10 +2,44 @@ cap program drop smcl2pdf_settings
 program define smcl2pdf_settings
 	version 17.0
 	
-	syntax [, HEADer LOGO noCMDnumber FONTSize(integer -1) PAGESize(string) ORIENTation(string) PAGEWidth(real -1) PAGEHeight(real -1) Margins(real -1) LMargin(real -1) RMargin(real -1) TMargin(real -1) BMargin(real -1) LINESize(integer -1) SCHEME(string) Query]
+	syntax [, DEFAULTpage HEADer LOGO noCMDnumber FONTSize(integer -1) PAGESize(string) ORIENTation(string) PAGEWidth(real -1) PAGEHeight(real -1) Margins(real -1) LMargin(real -1) RMargin(real -1) TMargin(real -1) BMargin(real -1) LINESize(integer -1) SCHEME(string) Query]
 	
 	
 	**** Error Checks ****
+	* Error Checks for Default Page Style
+	if "`defaultpage'"=="defaultpage" { // If defaultpage option is specified
+		capture assert "`header'"=="" & "`logo'"=="" & "`cmdnumber'"=="" & inlist(`fontsize', -1, 8) & inlist("`pagesize'", "", "legal") & `pagewidth'==-1 & `pageheight'==-1 & inlist(`margins', -1, 0.4) & inlist(`lmargin', -1, 0.4) & inlist(`rmargin', -1, 0.4) & inlist(`tmargin', -1, 0.4) & inlist(`bmargin', -1, 0.4) & inlist("`scheme'", "", "color")
+		if _rc!=0 { // If header, logo, nocmdnumber, fontsize, pagesize, pagewidth, pageheight, margins, lmargin, rmargin, tmargin, bmargin, or scheme are specified
+			local rc = _rc
+			di as error `"The option "defaultpage" cannot be combined with the options "header", "logo", "nocmdnumber", "fontsize", "pagesize", "pagewidth", "pageheight", "margins", "lmargin", "rmargin", "tmargin", "bmargin", or "scheme" because the option "defaultpage" automatically sets these options to the following values:"'
+			di as error `"header: noheader"'
+			di as error `"logo: nologo"'
+			di as error `"cmdnumber: cmdnumber"'
+			di as error `"fontsize: 8"'
+			di as error `"pagesize: legal"'
+			di as error `"lmargin: 0.4"'
+			di as error `"rmargin: 0.4"'
+			di as error `"tmargin: 0.4"'
+			di as error `"bmargin: 0.4"'
+			di as error `"scheme: color"'
+			error `rc'
+			exit
+		}
+		else { // If header, logo, nocmdnumber, fontsize, pagesize, pagewidth, pageheight, margins, lmargin, rmargin, tmargin, bmargin, and scheme are not specified
+			local header ""
+			local logo ""
+			local cmdnumber ""
+			local fontsize "8"
+			local pagesize "legal"
+			local lmargin "0.4"
+			local rmargin "0.4"
+			local tmargin "0.4"
+			local bmargin "0.4"
+			local scheme "color"
+		}
+	}
+	
+	
 	* Error Checks for Page Size and Page Width/Height
 	if "`pagesize'"!="" { // If pagesize option is specified
 		capture assert inlist(strupper("`pagesize'"), "LETTER", "LEGAL", "A3", "A4", "A5", "B4", "B5")
