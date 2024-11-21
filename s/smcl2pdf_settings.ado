@@ -90,10 +90,6 @@ program define smcl2pdf_settings
 	}
 	
 	
-	* Default Scheme: color
-	if "`scheme'"=="" local scheme "color"
-	
-	
 	
 	
 	**** Set Orientation via Page Width and Page Height
