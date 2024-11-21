@@ -29,7 +29,7 @@ program define smcl2pdf_settings
 	
 	if "`defaultpage'"=="defaultpage" { // If defaultpage option is specified
 		capture assert "`header'"=="" & "`logo'"=="" & "`cmdnumber'"=="" & inlist(`fontsize', -1, 8) & inlist("`pagesize'", "", "legal") & `pagewidth'==-1 & `pageheight'==-1 & inlist(`margins', -1, 0.4) & inlist(`lmargin', -1, 0.4) & inlist(`rmargin', -1, 0.4) & inlist(`tmargin', -1, 0.4) & inlist(`bmargin', -1, 0.4) & inlist("`scheme'", "", "color")
-		if _rc!=0 { // If header, logo, nocmdnumber, fontsize, pagesize, pagewidth, pageheight, margins, lmargin, rmargin, tmargin, bmargin, or scheme are specified
+		if _rc!=0 { // If header, logo, nocmdnumber, fontsize, pagesize, pagewidth, pageheight, margins, lmargin, rmargin, tmargin, bmargin, or scheme options are specified
 			local rc = _rc
 			di as error `"The option "defaultpage" cannot be combined with the options "header", "logo", "nocmdnumber", "fontsize", "pagesize", "pagewidth", "pageheight", "margins", "lmargin", "rmargin", "tmargin", "bmargin", or "scheme" because the option "defaultpage" automatically sets these options to the following values:"'
 			di as error `"header: noheader"'
@@ -45,7 +45,7 @@ program define smcl2pdf_settings
 			error `rc'
 			exit
 		}
-		else { // If header, logo, nocmdnumber, fontsize, pagesize, pagewidth, pageheight, margins, lmargin, rmargin, tmargin, bmargin, and scheme are not specified
+		else { // If header, logo, nocmdnumber, fontsize, pagesize, pagewidth, pageheight, margins, lmargin, rmargin, tmargin, bmargin, and scheme options are not specified
 			local header ""
 			local logo ""
 			local cmdnumber ""
