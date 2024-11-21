@@ -2,7 +2,7 @@ cap program drop smcl2pdf_settings
 program define smcl2pdf_settings
 	version 17.0
 	
-	syntax [, HEADer LOGO noCMDnumber FONTSize(integer 8) PAGESize(string) ORIENTation(string) PAGEWidth(real -1) PAGEHeight(real -1) LMargin(real 0.4) RMargin(real 0.4) TMargin(real 0.4) BMargin(real 0.4) LINESize(integer -1) SCHEME(string) Query]
+	syntax [, HEADer LOGO noCMDnumber FONTSize(integer 8) PAGESize(string) ORIENTation(string) PAGEWidth(real -1) PAGEHeight(real -1) LMargin(real -1) RMargin(real -1) TMargin(real -1) BMargin(real -1) LINESize(integer -1) SCHEME(string) Query]
 	
 	
 	**** Error Checks ****
@@ -125,10 +125,10 @@ program define smcl2pdf_settings
 	translator set smcl2pdf fontsize `fontsize'
 	
 	* Margins
-	translator set smcl2pdf lmargin `lmargin'
-	translator set smcl2pdf rmargin `rmargin'
-	translator set smcl2pdf tmargin `tmargin'
-	translator set smcl2pdf bmargin `bmargin'
+	if `lmargin'!=-1 translator set smcl2pdf lmargin `lmargin'
+	if `rmargin'!=-1 translator set smcl2pdf rmargin `rmargin'
+	if `tmargin'!=-1 translator set smcl2pdf tmargin `tmargin'
+	if `bmargin'!=-1 translator set smcl2pdf bmargin `bmargin'
 	
 	* Scheme
 	translator set smcl2pdf scheme `scheme'
