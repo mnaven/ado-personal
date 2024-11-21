@@ -82,16 +82,6 @@ program define smcl2pdf_settings
 	
 	
 	
-	**** Set Defaults ****
-	* Default Page Size: legal
-	if "`pagesize'"=="" & `pagewidth'==-1 & `pageheight'==-1 { // If pagesize, pagewidth, and pageheight options are not specified
-		local pagesize "legal"
-		translator set smcl2pdf pagesize legal
-	}
-	
-	
-	
-	
 	**** Set Orientation via Page Width and Page Height
 	if `pagewidth'==-1 & `pageheight'==-1 { // If pagewidth and pageheight options are not specified
 		quiet: translator query smcl2pdf
