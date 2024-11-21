@@ -2,7 +2,7 @@ cap program drop smcl2pdf_settings
 program define smcl2pdf_settings
 	version 17.0
 	
-	syntax [, HEADer LOGO noCMDnumber FONTSize(real 8) PAGESize(string) ORIENTation(string) PAGEWidth(real -1) PAGEHeight(real -1) LMargin(real 0.4) RMargin(real 0.4) TMargin(real 0.4) BMargin(real 0.4) LINESize(real -1) SCHEME(string) Query]
+	syntax [, HEADer LOGO noCMDnumber FONTSize(integer 8) PAGESize(string) ORIENTation(string) PAGEWidth(real -1) PAGEHeight(real -1) LMargin(real 0.4) RMargin(real 0.4) TMargin(real 0.4) BMargin(real 0.4) LINESize(integer -1) SCHEME(string) Query]
 	
 	
 	**** Error Checks ****
