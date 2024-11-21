@@ -2,7 +2,7 @@ cap program drop smcl2pdf_settings
 program define smcl2pdf_settings
 	version 17.0
 	
-	syntax [, HEADer LOGO noCMDnumber FONTSize(integer -1) PAGESize(string) ORIENTation(string) PAGEWidth(real -1) PAGEHeight(real -1) LMargin(real -1) RMargin(real -1) TMargin(real -1) BMargin(real -1) LINESize(integer -1) SCHEME(string) Query]
+	syntax [, HEADer LOGO noCMDnumber FONTSize(integer -1) PAGESize(string) ORIENTation(string) PAGEWidth(real -1) PAGEHeight(real -1) Margins(real -1) LMargin(real -1) RMargin(real -1) TMargin(real -1) BMargin(real -1) LINESize(integer -1) SCHEME(string) Query]
 	
 	
 	**** Error Checks ****
@@ -59,6 +59,24 @@ program define smcl2pdf_settings
 		translator set smcl2pdf pagesize custom
 		translator set smcl2pdf pagewidth `pagewidth'
 		translator set smcl2pdf pageheight `pageheight'
+	}
+	
+	
+	* Error Check for Margins
+	if `margins'!=-1 { // If margins option is specified
+		capture assert `lmargin'==-1 & `rmargin'==-1 & `tmargin'==-1 & `bmargin'==-1
+		if _rc!=0 { // If one of the margin options is specified
+			local rc = _rc
+			di as error `"The option "margins" cannot be combined with the options "lmargin", "rmargin", "tmargin", or "bmargin"."'
+			error `rc'
+			exit
+		}
+		else { // If none of the margin options are specified
+			local lmargin `margins'
+			local rmargin `margins'
+			local tmargin `margins'
+			local bmargin `margins'
+		}
 	}
 	
 	
