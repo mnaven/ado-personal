@@ -189,7 +189,7 @@ program define smcl2pdf_settings
 	if `bmargin'!=-1 translator set smcl2pdf bmargin `bmargin'
 	
 	* Scheme
-	translator set smcl2pdf scheme `scheme'
+	if "`scheme'"!="" translator set smcl2pdf scheme `scheme'
 	
 	* Line Size
 	if `linesize'==-1 { // If linesize option not specified
