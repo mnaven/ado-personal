@@ -16,12 +16,15 @@ program define smcl2pdf_settings
 			exit
 		}
 		else { // If defaultportrait and defaultlandscape options are not both specified
+			* Set defaultpage option on
 			local defaultpage "defaultpage"
 			
 			if "`defaultportrait'"=="defaultportrait" { // If defaultportrait option is specified
+				* Set orientation to portrait
 				local orientation "portrait"
 			}
 			else if "`defaultlandscape'"=="defaultlandscape" { // If defaultlandscape option is specified
+				* Set orientation to landscape
 				local orientation "landscape"
 			}
 		}
@@ -46,6 +49,7 @@ program define smcl2pdf_settings
 			exit
 		}
 		else { // If header, logo, nocmdnumber, fontsize, pagesize, pagewidth, pageheight, margins, lmargin, rmargin, tmargin, bmargin, and scheme options are not specified
+			* Set default page settings
 			local header ""
 			local logo ""
 			local cmdnumber ""
@@ -74,6 +78,7 @@ program define smcl2pdf_settings
 			error 184
 			exit
 		}
+		* Set page size to pagesize option
 		else translator set smcl2pdf pagesize `pagesize' // If pagesize is letter, legal, A3, A4, A5, B4, or B5 and pagewidth and pageheight options are not specified
 	}
 	
@@ -107,11 +112,16 @@ program define smcl2pdf_settings
 				exit
 			}
 		
+		* Set orientation to portrait
 		if `pagewidth'<`pageheight' & "`orientation'"=="" local orientation "portrait" // If pagewidth is less than pageheight and orientation option is not specified
+		* Set orientation to landscape
 		else if `pageheight'<`pagewidth' & "`orientation'"=="" local orientation "landscape" // If pageheight is less than pagewidth and orientation option is not specified
 		
+		* Set page size to custom
 		translator set smcl2pdf pagesize custom
+		* Set page width to pagewidth option
 		translator set smcl2pdf pagewidth `pagewidth'
+		* Set page height to pageheight option
 		translator set smcl2pdf pageheight `pageheight'
 	}
 	
@@ -126,6 +136,7 @@ program define smcl2pdf_settings
 			exit
 		}
 		else { // If lmargin, rmargin, tmargin, and bmargin are not specified
+			* Set lmargin, rmargin, tmargin, and bmargin to margins option
 			local lmargin `margins'
 			local rmargin `margins'
 			local tmargin `margins'
@@ -151,15 +162,22 @@ program define smcl2pdf_settings
 		}
 		
 		if "`orientation'"=="portrait" { // If orientation option is portrait
+			* Set page size to custom
 			translator set smcl2pdf pagesize custom
+			* Set page width to length of current short side
 			translator set smcl2pdf pagewidth `short_side'
+			* Set page height to length of current long side
 			translator set smcl2pdf pageheight `long_side'
 		}
 		else if "`orientation'"=="landscape" { // If orientation option is landscape
+			* Set page size to custom
 			translator set smcl2pdf pagesize custom
+			* Set page width to length of current short side
 			translator set smcl2pdf pagewidth `long_side'
+			* Set page height to length of current long side
 			translator set smcl2pdf pageheight `short_side'
 		}
+		* Set orientation as current orientation if orientation, pagewidth, and pageheight options are not specified
 		else if "`orientation'"=="" local orientation "`orientation_query'" // If orientation option is not specified
 	}
 	
@@ -194,7 +212,9 @@ program define smcl2pdf_settings
 	* Line Size
 	if `linesize'!=-1 set linesize `linesize' // If linesize option is specified
 	else if `linesize'==-1 { // If linesize option is not specified
+		* Set portrait line size
 		if "`orientation'"=="portrait" local linesize 120 // If portrait orientation
+		* Set landscape line size
 		else if "`orientation'"=="landscape" local linesize 200 // If landscape orientation
 	}
 	
