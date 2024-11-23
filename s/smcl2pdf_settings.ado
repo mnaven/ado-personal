@@ -192,11 +192,11 @@ program define smcl2pdf_settings
 	if "`scheme'"!="" translator set smcl2pdf scheme `scheme'
 	
 	* Line Size
-	if `linesize'==-1 { // If linesize option not specified
+	if `linesize'!=-1 set linesize `linesize' // If linesize option is specified
+	else if `linesize'==-1 { // If linesize option not specified
 		if "`orientation'"=="portrait" local linesize 120
 		else if "`orientation'"=="landscape" local linesize 200
 	}
-	else set linesize `linesize'
 	
 	
 	
