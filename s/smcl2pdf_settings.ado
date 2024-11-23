@@ -15,7 +15,7 @@ program define smcl2pdf_settings
 			error `rc'
 			exit
 		}
-		else {
+		else { // If defaultportrait and defaultlandscape options are not both specified
 			local defaultpage "defaultpage"
 			
 			if "`defaultportrait'"=="defaultportrait" { // If defaultportrait option is specified
@@ -74,7 +74,7 @@ program define smcl2pdf_settings
 			error 184
 			exit
 		}
-		else translator set smcl2pdf pagesize `pagesize'
+		else translator set smcl2pdf pagesize `pagesize' // If pagesize is letter, legal, A3, A4, A5, B4, or B5 and pagewidth and pageheight options are not specified
 	}
 	
 	
@@ -92,14 +92,14 @@ program define smcl2pdf_settings
 	
 	* Error Checks for Orientation and Page Width/Height
 	if `pagewidth'!=-1 & `pageheight'!=-1 { // If pagewidth and pageheight options are specified
-		if "`orientation'"=="portrait" capture assert `pagewidth'<`pageheight'
+		if "`orientation'"=="portrait" capture assert `pagewidth'<`pageheight' // If orientation option is portrait
 			if _rc!=0 { // If pagewidth is not less than pageheight
 				local rc = _rc
 				di as error `"Page width must be less than page height for portrait orientation."'
 				error `rc'
 				exit
 			}
-		else if "`orientation'"=="landscape" capture assert `pageheight'<`pagewidth'
+		else if "`orientation'"=="landscape" capture assert `pageheight'<`pagewidth' // If orientation option is landscape
 			if _rc!=0 { // If pageheight is not less than pagewidth
 				local rc = _rc
 				di as error `"Page height must be less than page width for landscape orientation."'
@@ -107,8 +107,8 @@ program define smcl2pdf_settings
 				exit
 			}
 		
-		if `pagewidth'<`pageheight' local orientation "portrait"
-		else if `pageheight'<`pagewidth' local orientation "landscape"
+		if `pagewidth'<`pageheight' & "`orientation'"=="" local orientation "portrait" // If pagewidth is less than pageheight and orientation option is not specified
+		else if `pageheight'<`pagewidth' & "`orientation'"=="" local orientation "landscape" // If pageheight is less than pagewidth and orientation option is not specified
 		
 		translator set smcl2pdf pagesize custom
 		translator set smcl2pdf pagewidth `pagewidth'
@@ -119,13 +119,13 @@ program define smcl2pdf_settings
 	* Error Check for Margins
 	if `margins'!=-1 { // If margins option is specified
 		capture assert `lmargin'==-1 & `rmargin'==-1 & `tmargin'==-1 & `bmargin'==-1
-		if _rc!=0 { // If one of the margin options is specified
+		if _rc!=0 { // If lmargin, rmargin, tmargin, or bmargin is specified
 			local rc = _rc
 			di as error `"The option "margins" cannot be combined with the options "lmargin", "rmargin", "tmargin", or "bmargin"."'
 			error `rc'
 			exit
 		}
-		else { // If none of the margin options are specified
+		else { // If lmargin, rmargin, tmargin, and bmargin are not specified
 			local lmargin `margins'
 			local rmargin `margins'
 			local tmargin `margins'
@@ -150,17 +150,17 @@ program define smcl2pdf_settings
 			local orientation_query "landscape"
 		}
 		
-		if "`orientation'"=="portrait" { // If portrait option is specified
+		if "`orientation'"=="portrait" { // If orientation option is portrait
 			translator set smcl2pdf pagesize custom
 			translator set smcl2pdf pagewidth `short_side'
 			translator set smcl2pdf pageheight `long_side'
 		}
-		else if "`orientation'"=="landscape" { // If landscape option is specified
+		else if "`orientation'"=="landscape" { // If orientation option is landscape
 			translator set smcl2pdf pagesize custom
 			translator set smcl2pdf pagewidth `long_side'
 			translator set smcl2pdf pageheight `short_side'
 		}
-		else if "`orientation'"=="" local orientation "`orientation_query'"
+		else if "`orientation'"=="" local orientation "`orientation_query'" // If orientation option is not specified
 	}
 	
 	
@@ -168,34 +168,34 @@ program define smcl2pdf_settings
 	
 	**** Set smcl2pdf Settings
 	* Header
-	if "`header'"=="header" translator set smcl2pdf header on
-	else translator set smcl2pdf header off
+	if "`header'"=="header" translator set smcl2pdf header on // If header option is specified
+	else translator set smcl2pdf header off // If header option is not specified
 	
 	* Logo
-	if "`logo'"=="logo" translator set smcl2pdf logo on
-	else translator set smcl2pdf logo off
+	if "`logo'"=="logo" translator set smcl2pdf logo on // If logo option is specified
+	else translator set smcl2pdf logo off // If logo option is not specified
 	
 	* Command Number
-	if "`cmdnumber'"=="nocmdnumber" translator set smcl2pdf cmdnumber off
-	else translator set smcl2pdf cmdnumber on
+	if "`cmdnumber'"=="nocmdnumber" translator set smcl2pdf cmdnumber off // If nocmdnumber option is specified
+	else translator set smcl2pdf cmdnumber on // If nocmdnumber option is not specified
 	
 	* Font Size
-	if `fontsize'!=-1 translator set smcl2pdf fontsize `fontsize'
+	if `fontsize'!=-1 translator set smcl2pdf fontsize `fontsize' // If fontsize option is specified
 	
 	* Margins
-	if `lmargin'!=-1 translator set smcl2pdf lmargin `lmargin'
-	if `rmargin'!=-1 translator set smcl2pdf rmargin `rmargin'
-	if `tmargin'!=-1 translator set smcl2pdf tmargin `tmargin'
-	if `bmargin'!=-1 translator set smcl2pdf bmargin `bmargin'
+	if `lmargin'!=-1 translator set smcl2pdf lmargin `lmargin' // If lmargin option is specified
+	if `rmargin'!=-1 translator set smcl2pdf rmargin `rmargin' // If rmargin option is specified
+	if `tmargin'!=-1 translator set smcl2pdf tmargin `tmargin' // If tmargin option is specified
+	if `bmargin'!=-1 translator set smcl2pdf bmargin `bmargin' // If bmargin option is specified
 	
 	* Scheme
-	if "`scheme'"!="" translator set smcl2pdf scheme `scheme'
+	if "`scheme'"!="" translator set smcl2pdf scheme `scheme' // If scheme option is specified
 	
 	* Line Size
 	if `linesize'!=-1 set linesize `linesize' // If linesize option is specified
-	else if `linesize'==-1 { // If linesize option not specified
-		if "`orientation'"=="portrait" local linesize 120
-		else if "`orientation'"=="landscape" local linesize 200
+	else if `linesize'==-1 { // If linesize option is not specified
+		if "`orientation'"=="portrait" local linesize 120 // If portrait orientation
+		else if "`orientation'"=="landscape" local linesize 200 // If landscape orientation
 	}
 	
 	
