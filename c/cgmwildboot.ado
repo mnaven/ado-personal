@@ -176,6 +176,11 @@ program define cgmwildboot, eclass byable(onecall) sortpreserve
 	mat `covmat'=J(`numxc',`numxc',0)
 	mat rownames `covmat'= ``tmpx''
 	mat colnames `covmat'= ``tmpx''
+	tempname r_table
+	mat `r_table' = J(9, `numxc', .)
+	mat colnames `r_table' = ``tmpx''
+	mat rownames `r_table' = b se t pvalue ll ul df crit eform
+	mat `r_table'[rownumb(`r_table', "b"), 1] = `b'
 	scalar `e_df_r'=e(df_r)
 	scalar `e_df_m'=e(df_m)
 	local `depvar'=e(depvar)
@@ -379,6 +384,7 @@ program define cgmwildboot, eclass byable(onecall) sortpreserve
 
 			qui summ `n' if abs(``tmpv''-`tmpi') < 0.000001 & type==1
 			scalar `p'=2*cond(`tmpi'<0,min(r(mean)/`numt',0.5),cond(`tmpi'>0,min(1-r(mean)/`numt',0.5),1,.),.)
+			mat `r_table'[rownumb(`r_table', "pvalue"), `k'] = `p'
 
 
 			/* Fake covariance matrix and (real) confidence interval */
@@ -399,6 +405,7 @@ program define cgmwildboot, eclass byable(onecall) sortpreserve
 				scalar `cL'=r(min)
 				}
 			else scalar `cL'=r(mean)
+			mat `r_table'[rownumb(`r_table', "ll"), `k'] = `cL'
 	
 			qui summ ``tmpv'' if type==0 & `n'==ceil(`cH'-0.025*(`cN'))
 			if r(N)==0 {
@@ -406,6 +413,7 @@ program define cgmwildboot, eclass byable(onecall) sortpreserve
 				scalar `cH'=r(max)
 				}
 			else scalar `cH'=r(mean)
+			mat `r_table'[rownumb(`r_table', "ul"), `k'] = `cH'
 			di ``ig'' %12s abbrev("``tmpv''",12) "{c |}" ``iy'' ``c1'' `b'[1,`k'] ``c2'' `xnull'[1,`k'] ``c3'' `p' ``c4'' `cL' ``c5'' `cH'
 			}
 		else {
@@ -445,6 +453,7 @@ program define cgmwildboot, eclass byable(onecall) sortpreserve
 	ereturn local bootclust		= "`bootcluster'"
 
 	ereturn matrix bootresults=`tmat'
+	ereturn matrix table = `r_table'
 
 	restore
 
