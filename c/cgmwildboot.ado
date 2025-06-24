@@ -387,6 +387,7 @@ program define cgmwildboot, eclass byable(onecall) sortpreserve
 			mat `r_table'[rownumb(`r_table', "pvalue"), `k'] = `p'
 			mat `r_table'[rownumb(`r_table', "t"), `k'] = cond(`p'==1, 0, cond(`p'==0 & `b'[1, `k']<0, minfloat(), cond(`p'==0 & `b'[1, `k']>0, maxfloat(), (sign(`b'[1, `k']) * invttail(`e_df_r', `p' / 2)))))
 			mat `r_table'[rownumb(`r_table', "se"), `k'] = (`r_table'[rownumb(`r_table', "b"), `k']) / (`r_table'[rownumb(`r_table', "t"), `k'])
+			mat `r_table'[rownumb(`r_table', "df"), `k'] = scalar(`e_df_r')
 
 
 			/* Fake covariance matrix and (real) confidence interval */
