@@ -75,7 +75,7 @@ program define epctile, eclass sortpreserve properties(svyb svyj)
      qui count if `touse'
      local nobs = r(N)
 
-     tempname b bb V
+     tempname b bb V _N _N_subp se z pvalue ll ul df_r rtable
      * 1. get percentiles via _pctile
      if "`over'" == "" {
         _pctile `y' [pw=`wgt'] if `touse', percentiles( `percentiles' )
@@ -136,9 +136,14 @@ program define epctile, eclass sortpreserve properties(svyb svyj)
      * 3. compute the covariance with -svy: mean-
      if "`over'" != "" local overopt over(`over', nolabel)
      qui `svy' mean `dlist' if `touse' `wexp', `overopt'
+     local `df_r' = e(df_r)
      local vcetype `e(vcetype)'
      local vce `e(vce)'
      mat `V' = e(V)
+     mat `_N' = e(_N)
+     mat `_N_subp' = e(_N_subp)
+     mat `rtable' = r(table)
+     mat `rtable'["b", 1.] = `b'
 
      * sreturn values are lost by now
      if "`over'"!= "" FormXLevels `overlist' if `touse', valuemask( "`valuemask'" )
@@ -189,6 +194,16 @@ program define epctile, eclass sortpreserve properties(svyb svyj)
        * no standard errors
        mat `V' = J( colsof(`b'), colsof(`b'), 0 )
      }
+     mata: st_matrix("`se'", sqrt(diagonal(st_matrix("`V'"))))
+     mat `rtable'["se", 1.] = `se'
+     mata: st_matrix("`z'", st_matrix("`b'") :/ st_matrix("`se'"))
+     mat `rtable'["z", 1.] = `z'
+     mata: st_matrix("`pvalue'", t(st_local("`df_r'"), st_matrix("`z'")))
+     mat `rtable'["pvalue", 1.] = `pvalue'
+     mata: st_matrix("`ll'", st_matrix("`b'") - invnormal(1 - ((1 - ($S_level / 100)) / 2)) * st_matrix("`se'"))
+     mat `rtable'["ll", 1.] = `ll'
+     mata: st_matrix("`ll'", st_matrix("`b'") + invnormal(1 - ((1 - ($S_level / 100)) / 2)) * st_matrix("`se'"))
+     mat `rtable'["ul", 1.] = `ul'
 
      * grand finale: nice labels
      mat rownames `V' = `cnames'
@@ -200,7 +215,31 @@ program define epctile, eclass sortpreserve properties(svyb svyj)
      mat colnames `scale' = `cnames'
      mat rownames `scale' = `y'
 
-     ereturn post `b' `V', obs(`nobs') depname(`y') esample(`touse')
+     capture noisily ereturn post `b' `V', obs(`nobs') depname(`y') esample(`touse')
+	 if _rc==504 { // If matrix V has missing values
+	 	di "Standard errors could not be estimated."
+		
+		local se_estimates 0
+		
+	 	capture noisily ereturn post `b', obs(`nobs') depname(`y') esample(`touse')
+		if _rc==504 { // If matrix b has missing values
+			di as err "Coefficients and standard errors could not be estimated."
+			exit 504
+		}
+		else { // If matrix b has no missing values
+			local n_cols_rtable = colsof(`rtable')
+			matrix `rtable'["`se'", 1.] = J(1, `n_cols_rtable', .)
+			matrix `rtable'["`z'", 1.] = J(1, `n_cols_rtable', .)
+			matrix `rtable'["`pvalue'", 1.] = J(1, `n_cols_rtable', .)
+			matrix `rtable'["`ll'", 1.] = J(1, `n_cols_rtable', .)
+			matrix `rtable'["`ul'", 1.] = J(1, `n_cols_rtable', .)
+		}
+	 }
+	 else { // If matrix V has no missing values
+	 	local se_estimates 1
+	 }
+	 ereturn matrix _N = `_N'
+	 ereturn matrix _N_subp = `_N_subp'
      ereturn matrix scale  = `scale'
      ereturn scalar N_over = `np'
      ereturn local over      `over'
@@ -218,6 +257,9 @@ program define epctile, eclass sortpreserve properties(svyb svyj)
   di _n as text "Percentile estimation"
   ereturn display, level(`level')
   di _n
+  if `se_estimates'==0 {
+     return matrix table = `rtable'
+  }
 end
 
 
