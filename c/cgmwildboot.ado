@@ -385,6 +385,7 @@ program define cgmwildboot, eclass byable(onecall) sortpreserve
 			qui summ `n' if abs(``tmpv''-`tmpi') < 0.000001 & type==1
 			scalar `p'=2*cond(`tmpi'<0,min(r(mean)/`numt',0.5),cond(`tmpi'>0,min(1-r(mean)/`numt',0.5),1,.),.)
 			mat `r_table'[rownumb(`r_table', "pvalue"), `k'] = `p'
+			mat `r_table'[rownumb(`r_table', "t"), `k'] = cond(`p'==1, 0, cond(`p'==0 & `b'[1, `k']<0, minfloat(), cond(`p'==0 & `b'[1, `k']>0, maxfloat(), (sign(`b'[1, `k']) * invttail(`e_df_r', `p' / 2)))))
 
 
 			/* Fake covariance matrix and (real) confidence interval */
