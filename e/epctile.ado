@@ -92,7 +92,7 @@ program define epctile, eclass sortpreserve properties(svyb svyj)
         * number of variables
         local novervar : word count `overlist'
 
-        FormXLevels `overlist', valuemask( "`valuemask'" )
+        FormXLevels `overlist' if `touse', valuemask( "`valuemask'" )
 
         mat `b' = J(1,`np'*`s(ncombos)', .)
         * the parameter estimates should run by percentile, then by `over' variables
@@ -141,7 +141,7 @@ program define epctile, eclass sortpreserve properties(svyb svyj)
      mat `V' = e(V)
 
      * sreturn values are lost by now
-     if "`over'"!= "" FormXLevels `overlist', valuemask( "`valuemask'" )
+     if "`over'"!= "" FormXLevels `overlist' if `touse', valuemask( "`valuemask'" )
 
      * 4. compute the Woodruff estimates of variance
      tempname scale

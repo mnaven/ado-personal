@@ -10,7 +10,7 @@ program define FormXLevels, sclass
 
    marksample touse
 
-   qui bysort `varlist' : gen byte `first' = (_n==1) & `touse'
+   qui bysort `varlist' `touse' : gen byte `first' = (_n==1) & `touse'
 
    if "`missing'" == "" markout `first' `varlist'
 
