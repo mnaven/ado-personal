@@ -136,14 +136,14 @@ program define epctile, eclass sortpreserve properties(svyb svyj)
      * 3. compute the covariance with -svy: mean-
      if "`over'" != "" local overopt over(`over', nolabel)
      qui `svy' mean `dlist' if `touse' `wexp', `overopt'
-     local `df_r' = e(df_r)
+     /*local `df_r' = e(df_r)*/
      local vcetype `e(vcetype)'
      local vce `e(vce)'
      mat `V' = e(V)
      mat `_N' = e(_N)
      mat `_N_subp' = e(_N_subp)
-     mat `rtable' = r(table)
-     mat `rtable'["b", 1.] = `b'
+     /*mat `rtable' = r(table)
+     mat `rtable'["b", 1.] = `b'*/
 
      * sreturn values are lost by now
      if "`over'"!= "" FormXLevels `overlist' if `touse', valuemask( "`valuemask'" )
@@ -194,7 +194,7 @@ program define epctile, eclass sortpreserve properties(svyb svyj)
        * no standard errors
        mat `V' = J( colsof(`b'), colsof(`b'), 0 )
      }
-     mata: st_matrix("`se'", sqrt(diagonal(st_matrix("`V'"))))
+     /*mata: st_matrix("`se'", sqrt(diagonal(st_matrix("`V'"))))
      mat `rtable'["se", 1.] = `se'
      mata: st_matrix("`z'", st_matrix("`b'") :/ st_matrix("`se'"))
      mat `rtable'["z", 1.] = `z'
@@ -203,7 +203,7 @@ program define epctile, eclass sortpreserve properties(svyb svyj)
      mata: st_matrix("`ll'", st_matrix("`b'") - invnormal(1 - ((1 - ($S_level / 100)) / 2)) * st_matrix("`se'"))
      mat `rtable'["ll", 1.] = `ll'
      mata: st_matrix("`ll'", st_matrix("`b'") + invnormal(1 - ((1 - ($S_level / 100)) / 2)) * st_matrix("`se'"))
-     mat `rtable'["ul", 1.] = `ul'
+     mat `rtable'["ul", 1.] = `ul'*/
 
      * grand finale: nice labels
      mat rownames `V' = `cnames'
@@ -227,12 +227,12 @@ program define epctile, eclass sortpreserve properties(svyb svyj)
 			exit 504
 		}
 		else { // If matrix b has no missing values
-			local n_cols_rtable = colsof(`rtable')
+			/*local n_cols_rtable = colsof(`rtable')
 			matrix `rtable'["`se'", 1.] = J(1, `n_cols_rtable', .)
 			matrix `rtable'["`z'", 1.] = J(1, `n_cols_rtable', .)
 			matrix `rtable'["`pvalue'", 1.] = J(1, `n_cols_rtable', .)
 			matrix `rtable'["`ll'", 1.] = J(1, `n_cols_rtable', .)
-			matrix `rtable'["`ul'", 1.] = J(1, `n_cols_rtable', .)
+			matrix `rtable'["`ul'", 1.] = J(1, `n_cols_rtable', .)*/
 		}
 	 }
 	 else { // If matrix V has no missing values
@@ -258,7 +258,7 @@ program define epctile, eclass sortpreserve properties(svyb svyj)
   ereturn display, level(`level')
   di _n
   if `se_estimates'==0 {
-     return matrix table = `rtable'
+     /*return matrix table = `rtable'*/
   }
 end
 
